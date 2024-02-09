@@ -18,3 +18,7 @@ jobs:
       - name: Setup Distrobuilder
         run: |
           sudo snap install distrobuilder --classic
+
+      - name: Build Image
+        run: |
+          sudo distrobuilder build-incus alpine.yml rootfs -o image.serial=${{ github.run_id }} -o image.architecture=x86_64 -o image.release=3.19
