@@ -7,12 +7,15 @@ on:
 
 jobs:
   build:
-    runs-on: warp-ubuntu-latest-arm64-2x
     strategy:
       matrix:
         release: ["3.16", "3.17", "3.18", "3.19", "edge"]
-        arch: ["x86_64", "aarch64"]
+        os: [
+          {arch: "aarch64", builder: "warp-ubuntu-latest-arm64-2x"},
+          {arch: "x86_64", builder: "warp-ubuntu-latest-x4-2x"}
+        ]
 
+    runs-on: ${{matrix.os.builder}}
     steps: 
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,4 +28,4 @@ jobs:
 
       - name: Build Image
         run: |
-          sudo distrobuilder build-incus alpine.yml rootfs -o image.serial=${{ github.run_id }} -o image.architecture=${{matrix.arch}} -o image.release=${{matrix.release}}
+          sudo distrobuilder build-incus alpine.yml rootfs -o image.serial=${{ github.run_id }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release}}
