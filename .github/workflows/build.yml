@@ -17,4 +17,4 @@ jobs:
 
       - name: Setup Distrobuilder
         run: |
-          snap install distrobuilder --classic
+          sudo snap install distrobuilder --classic
