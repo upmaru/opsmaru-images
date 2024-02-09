@@ -12,7 +12,7 @@ jobs:
         release: ["3.16", "3.17", "3.18", "3.19", "edge"]
         os: [
           {arch: "aarch64", builder: "warp-ubuntu-latest-arm64-2x"},
-          {arch: "x86_64", builder: "warp-ubuntu-latest-x4-2x"}
+          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
         ]
 
     runs-on: ${{matrix.os.builder}}
