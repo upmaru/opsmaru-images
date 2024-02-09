@@ -8,6 +8,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        release: ["3.16", "3.17", "3.18", "3.19"]
+        arch: ["x86_64", "aarch64"]
+
 
     steps: 
       - name: Checkout
@@ -21,4 +26,4 @@ jobs:
 
       - name: Build Image
         run: |
-          sudo distrobuilder build-incus alpine.yml rootfs -o image.serial=${{ github.run_id }} -o image.architecture=x86_64 -o image.release=3.19
+          sudo distrobuilder build-incus alpine.yml rootfs -o image.serial=${{ github.run_id }} -o image.architecture=${{matrix.arch}} -o image.release=${{matrix.release}}
