@@ -18,7 +18,7 @@ jobs:
         ]
         os: [
           # {arch: "aarch64", builder: "warp-ubuntu-latest-arm64-2x"},
-          {arch: "x86_64", builder: "ubuntu-latest"}
+          {arch: "x86_64", builder: "warp-ubuntu-latest-amd64-2x"}
         ]
 
     runs-on: ${{matrix.os.builder}}
