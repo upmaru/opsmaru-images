@@ -17,8 +17,8 @@ jobs:
           {distro: "alpine", version: "edge"}
         ]
         os: [
-          {arch: "aarch64", builder: "warp-ubuntu-latest-arm64-2x"},
-          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
+          # {arch: "aarch64", builder: "warp-ubuntu-latest-arm64-2x"},
+          {arch: "x86_64", builder: "ubuntu-latest"}
         ]
 
     runs-on: ${{matrix.os.builder}}
