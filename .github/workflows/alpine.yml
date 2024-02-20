@@ -41,14 +41,14 @@ jobs:
 
       - name: Build Image
         run: |
-          sudo distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }}-${{env.GITHUB_RUN_NUMBER}} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
+          sudo distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }}-${{GITHUB_RUN_NUMBER}} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
 
       - name: Setup IcePAK
         uses: upmaru/icepak@develop
 
       - name: Push
         run: |
-          icepak push --path rootfs --serial ${{ steps.generate-serial.outputs.serial }}-${{env.GITHUB_RUN_NUMBER}}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
+          icepak push --path rootfs --serial ${{ steps.generate-serial.outputs.serial }}-${{GITHUB_RUN_NUMBER}}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
         env:
           POLAR_AUTH_KEY: ${{ secrets.POLAR_AUTH_KEY }}
           POLAR_ENDPOINT: ${{ env.POLAR_ENDPOINT }}
