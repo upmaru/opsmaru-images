@@ -32,6 +32,8 @@ jobs:
 
       - name: Setup IcePAK
         uses: upmaru/icepak@develop
+        with:
+          alpine: v3.19
 
       - name: Generate Serial
         id: generate-serial
