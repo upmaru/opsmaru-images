@@ -30,10 +30,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup IcePAK
+        uses: upmaru/icepak@develop
+
       - name: Generate Serial
         id: generate-serial
         run: |
-          echo "serial=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+          echo "serial=$(date +'%Y%m%d')-$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
 
       - name: Setup Distrobuilder
         run: |
@@ -41,14 +44,12 @@ jobs:
 
       - name: Build Image
         run: |
-          sudo distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }}-$GITHUB_RUN_NUMBER -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
-
-      - name: Setup IcePAK
-        uses: upmaru/icepak@develop
+          sudo distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
 
       - name: Push
         run: |
-          icepak push --path rootfs --serial ${{ steps.generate-serial.outputs.serial }}-$GITHUB_RUN_NUMBER  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
+          icepak push --path rootfs --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
         env:
           POLAR_AUTH_KEY: ${{ secrets.POLAR_AUTH_KEY }}
           POLAR_ENDPOINT: ${{ env.POLAR_ENDPOINT }}
+          GITHUB_RUN_NUMBER: ${{}}
