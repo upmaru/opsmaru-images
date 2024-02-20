@@ -52,4 +52,3 @@ jobs:
         env:
           POLAR_AUTH_KEY: ${{ secrets.POLAR_AUTH_KEY }}
           POLAR_ENDPOINT: ${{ env.POLAR_ENDPOINT }}
-          GITHUB_RUN_NUMBER: ${{}}
