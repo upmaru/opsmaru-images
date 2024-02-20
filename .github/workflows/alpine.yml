@@ -34,6 +34,7 @@ jobs:
         uses: upmaru/icepak@develop
         with:
           alpine: v3.19
+          arch: ${{matrix.os.arch}}
 
       - name: Generate Serial
         id: generate-serial
