@@ -50,5 +50,5 @@ jobs:
         run: |
           icepak push --path rootfs --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
         env:
-          POLAR_AUTH_KEY: ${{ secrets.POLAR_AUTH_KEY }}
+          POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
           POLAR_ENDPOINT: ${{ env.POLAR_ENDPOINT }}
