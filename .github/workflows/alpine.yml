@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup IcePAK
-        uses: upmaru/icepak@develop
+        uses: upmaru/icepak@v0
         with:
           alpine: v3.19
           arch: ${{matrix.os.arch}}
