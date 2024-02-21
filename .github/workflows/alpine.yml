@@ -17,7 +17,7 @@ jobs:
           {distro: "alpine", version: "edge"}
         ]
         os: [
-          {arch: "aarch64", builder: "warp-ubuntu-latest-arm64-2x"},
+          {arch: "aarch64", builder: "namespace-profile-default"},
           {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
         ]
 
@@ -35,7 +35,7 @@ jobs:
         with:
           alpine: v3.19
           arch: ${{matrix.os.arch}}
-
+          
       - name: Generate Serial
         id: generate-serial
         run: |
