@@ -17,7 +17,7 @@ jobs:
           {distro: "alpine", version: "edge"}
         ]
         os: [
-          {arch: "aarch64", builder: "namespace-profile-default"},
+          {arch: "aarch64", builder: "nscloud-ubuntu-22.04-arm64-2x8"},
           {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
         ]
 
