@@ -41,11 +41,6 @@ jobs:
         run: |
           echo "serial=$(date +'%Y%m%d')-$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
 
-      - name: Setup Distrobuilder
-        run: |
-          sudo apt install snapd -y
-          sudo snap install distrobuilder --classic
-
       - name: Build Image
         run: |
           sudo distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
