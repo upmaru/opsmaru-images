@@ -43,6 +43,7 @@ jobs:
 
       - name: Setup Distrobuilder
         run: |
+          sudo apt install snapd -y
           sudo snap install distrobuilder --classic
 
       - name: Build Image
