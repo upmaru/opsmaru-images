@@ -43,7 +43,7 @@ jobs:
 
       - name: Build Image
         run: |
-          sudo distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
+          sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
 
       - name: Push
         run: |
