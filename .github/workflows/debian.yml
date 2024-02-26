@@ -14,8 +14,8 @@ jobs:
           {distro: "debian", version: "sid"}
         ]
         os: [
-          {arch: "arm64", builder: "nscloud-ubuntu-22.04-arm64-2x4"},
-          {arch: "amd64", builder: "nscloud-ubuntu-22.04-amd64-2x4"}
+          {arch: "aarch64", builder: "nscloud-ubuntu-22.04-arm64-2x4"},
+          {arch: "x86_64", builder: "nscloud-ubuntu-22.04-amd64-2x4"}
         ]
 
     runs-on: ${{matrix.os.builder}}
