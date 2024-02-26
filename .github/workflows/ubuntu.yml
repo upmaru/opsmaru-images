@@ -1,8 +1,9 @@
 name: 'Ubuntu'
 
 on:
-  schedule:
-    - cron: '0 0 7,14,21,28 * *'
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -10,7 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         release: [
-          {distro: "ubuntu", version: "jammy"}
+          {distro: "ubuntu", version: "jammy"},
+          {distro: "ubuntu", version: "noble"}
         ]
         os: [
           {arch: "aarch64", builder: "nscloud-ubuntu-22.04-arm64-2x4", source: "http://ports.ubuntu.com/ubuntu-ports"},
