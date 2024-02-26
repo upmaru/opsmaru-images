@@ -10,8 +10,7 @@ jobs:
     strategy:
       matrix:
         release: [
-          {distro: "ubuntu", version: "jammy"},
-          {distro: "ubuntu", version: "noble"}
+          {distro: "ubuntu", version: "jammy"}
         ]
         os: [
           {arch: "aarch64", builder: "nscloud-ubuntu-22.04-arm64-2x4", source: "http://ports.ubuntu.com/ubuntu-ports"},
