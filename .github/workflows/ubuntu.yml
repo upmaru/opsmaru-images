@@ -1,16 +1,17 @@
-name: 'Debian'
+name: 'Ubuntu'
 
 on:
-  schedule:
-    - cron: '0 0 7,14,21,28 * *'
+  push:
+    branches:
+      - main
 
 jobs:
   build:
     strategy:
       matrix:
         release: [
-          {distro: "debian", version: "bookworm"},
-          {distro: "debian", version: "sid"}
+          {distro: "ubuntu", version: "jammy"},
+          {distro: "ubuntu", version: "noble"}
         ]
         os: [
           {arch: "aarch64", builder: "nscloud-ubuntu-22.04-arm64-2x4"},
@@ -40,7 +41,7 @@ jobs:
       - name: Build Image
         run: |
           sudo apt-get install debootstrap -y
-          sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url="http://ftp.us.debian.org/debian"
+          sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url=http://ports.ubuntu.com/ubuntu-ports
 
       - name: Push
         run: |
