@@ -14,8 +14,8 @@ jobs:
           {distro: "ubuntu", version: "noble"}
         ]
         os: [
-          {arch: "aarch64", builder: "nscloud-ubuntu-22.04-arm64-2x4"},
-          {arch: "x86_64", builder: "nscloud-ubuntu-22.04-amd64-2x4"}
+          {arch: "aarch64", builder: "nscloud-ubuntu-22.04-arm64-2x4", source: "http://ports.ubuntu.com/ubuntu-ports"},
+          {arch: "x86_64", builder: "nscloud-ubuntu-22.04-amd64-2x4", source: "http://archive.ubuntu.com/ubuntu"}
         ]
 
     runs-on: ${{matrix.os.builder}}
@@ -41,7 +41,7 @@ jobs:
       - name: Build Image
         run: |
           sudo apt-get install debootstrap -y
-          sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url=http://ports.ubuntu.com/ubuntu-ports
+          sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url=${{matrix.os.source}}
 
       - name: Push
         run: |
