@@ -1,9 +1,8 @@
 name: 'Ubuntu'
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '0 0 7,14,21,28 * *'
 
 jobs:
   build:
