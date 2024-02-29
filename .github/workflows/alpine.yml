@@ -44,7 +44,7 @@ jobs:
 
       - name: Build Image
         run: |
-          sudo apt-get install btrfs-progs dosfstools -y  
+          sudo apt-get install btrfs-progs dosfstools qemu-utils -y  
           sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
           sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} --vm
 
