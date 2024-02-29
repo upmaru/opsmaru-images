@@ -18,8 +18,8 @@ jobs:
           {distro: "alpine", version: "edge"}
         ]
         os: [
-          {arch: "aarch64", builder: "warp-ubuntu-latest-arm64-2x"},
-          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
+          {arch: "aarch64", builder: "ubicloud-standard-2-arm"},
+          {arch: "x86_64", builder: "ubicloud-standard-2"}
         ]
 
     runs-on: ${{matrix.os.builder}}
