@@ -1,8 +1,9 @@
 name: 'Alpine'
 
 on:
-  schedule:
-    - cron: '0 0 7,14,21,28 * *'
+  push:
+    branches: 
+      - main
 
 jobs:
   build:
@@ -31,7 +32,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup IcePAK
-        uses: upmaru/icepak@v0
+        uses: upmaru/icepak@develop
         with:
           alpine: v3.19
           arch: ${{matrix.os.arch}}
@@ -44,6 +45,7 @@ jobs:
       - name: Build Image
         run: |
           sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
+          sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} --vm
 
       - name: Push
         run: |
