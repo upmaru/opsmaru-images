@@ -1,8 +1,9 @@
 name: 'Ubuntu'
 
 on:
-  schedule:
-    - cron: '0 0 7,14,21,28 * *'
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -28,7 +29,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup IcePAK
-        uses: upmaru/icepak@develop
+        uses: upmaru/icepak@v0
         with:
           alpine: v3.19
           arch: ${{matrix.os.arch}}
@@ -40,12 +41,14 @@ jobs:
 
       - name: Build Image
         run: |
-          sudo apt-get install debootstrap -y
-          sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url=${{matrix.os.source}}
+          sudo apt-get install debootstrap btrfs-progs dosfstools qemu-utils gdisk -y
+          sudo ~/go/bin/distrobuilder build-dir images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url=${{matrix.os.source}}
+          sudo ~/go/bin/distrobuilder pack-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url=${{matrix.os.source}}
+          sudo ~/go/bin/distrobuilder pack-incus images/${{matrix.release.distro}}.yml rootfs --vm -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url=${{matrix.os.source}}
 
       - name: Push
         run: |
-          icepak push --path rootfs --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
+          icepak push --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
         shell: alpine.sh {0}
         env:
           POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
