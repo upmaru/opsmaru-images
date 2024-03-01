@@ -1,8 +1,9 @@
 name: 'Debian'
 
 on:
-  schedule:
-    - cron: '0 0 7,14,21,28 * *'
+  push:
+    branches: 
+      - main
 
 jobs:
   build:
@@ -14,8 +15,8 @@ jobs:
           {distro: "debian", version: "sid"}
         ]
         os: [
-          {arch: "aarch64", builder: "nscloud-ubuntu-22.04-arm64-2x4"},
-          {arch: "x86_64", builder: "nscloud-ubuntu-22.04-amd64-2x4"}
+          {arch: "aarch64", builder: "ubicloud-standard-2-arm"},
+          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
         ]
 
     runs-on: ${{matrix.os.builder}}
@@ -41,11 +42,13 @@ jobs:
       - name: Build Image
         run: |
           sudo apt-get install debootstrap btrfs-progs dosfstools qemu-utils gdisk -y
-          sudo ~/go/bin/distrobuilder build-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url="http://ftp.us.debian.org/debian"
+          sudo ~/go/bin/distrobuilder build-dir images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url="http://ftp.us.debian.org/debian"
+          sudo ~/go/bin/distrobuilder pack-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url="http://ftp.us.debian.org/debian"
+          sudo ~/go/bin/distrobuilder pack-incus images/${{matrix.release.distro}}.yml rootfs --vm -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.url="http://ftp.us.debian.org/debian"
 
       - name: Push
         run: |
-          icepak push --path rootfs --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
+          icepak push --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
         shell: alpine.sh {0}
         env:
           POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
