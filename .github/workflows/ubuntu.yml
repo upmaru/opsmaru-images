@@ -15,8 +15,8 @@ jobs:
           {distro: "ubuntu", version: "noble"}
         ]
         os: [
-          {arch: "aarch64", builder: "nscloud-ubuntu-22.04-arm64-2x4", source: "http://ports.ubuntu.com/ubuntu-ports"},
-          {arch: "x86_64", builder: "nscloud-ubuntu-22.04-amd64-2x4", source: "http://archive.ubuntu.com/ubuntu"}
+          {arch: "aarch64", builder: "ubicloud-standard-2-arm", source: "http://ports.ubuntu.com/ubuntu-ports"},
+          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x", source: "http://archive.ubuntu.com/ubuntu"}
         ]
 
     runs-on: ${{matrix.os.builder}}
