@@ -51,7 +51,7 @@ jobs:
 
       - name: Push
         run: |
-          icepak push --path rootfs --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
+          icepak push --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
         shell: alpine.sh {0}
         env:
           POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
