@@ -2,8 +2,8 @@ name: 'Ubuntu'
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - ubuntu-*.*.*
 
 jobs:
   build:
