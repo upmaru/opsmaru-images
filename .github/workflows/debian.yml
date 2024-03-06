@@ -12,7 +12,7 @@ jobs:
       matrix:
         release: [
           {distro: "debian", version: "bookworm"},
-          {distro: "debian", version: "sid"}
+          {distro: "debian", version: "trixie"}
         ]
         os: [
           {arch: "aarch64", builder: "ubicloud-standard-2-arm"},
