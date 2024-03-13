@@ -1,0 +1,63 @@
+name: 'Debian'
+
+on:
+  push:
+    tags:
+      - centos-*.*.*
+    
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        release: [
+          {distro: "centos", version: "8-Stream", source: "https://mirror.math.princeton.edu/pub/centos/"},
+          {distro: "centos", version: "9-Stream", source: "https://mirror1.hs-esslingen.de/pub/Mirrors/centos-stream"}
+        ]
+        os: [
+          {arch: "aarch64", builder: "ubicloud-standard-2-arm", types: ["container"]},
+          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x", types: ["vm", "container"]}
+        ]
+
+    runs-on: ${{matrix.os.builder}}
+    env:
+      ImageOS: ubuntu22
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup IcePAK
+        uses: upmaru/icepak@v0
+        with:
+          alpine: v3.19
+          arch: ${{matrix.os.arch}}
+
+      - name: Generate Serial
+        id: generate-serial
+        run: |
+          echo "serial=$(date +'%Y%m%d')-$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Build Container Image
+        if: ${{ !contains(matrix.os.types, 'vm') }}
+        run: |
+          sudo apt-get install debootstrap btrfs-progs dosfstools qemu-utils gdisk -y
+          sudo ~/go/bin/distrobuilder build-dir images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.variant=boot -o source.url=${{matrix.release.source}}
+          sudo ~/go/bin/distrobuilder pack-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.variant=boot -o source.url=${{matrix.release.source}}
+
+      - name: Build Container and VM Image
+        if: ${{ contains(matrix.os.types, 'vm') }}
+        run: |
+          sudo apt-get install debootstrap btrfs-progs dosfstools qemu-utils gdisk -y
+          sudo ~/go/bin/distrobuilder build-dir images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.variant=boot -o source.url=${{matrix.release.source}}
+          sudo ~/go/bin/distrobuilder pack-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.variant=boot -o source.url=${{matrix.release.source}}
+          sudo ~/go/bin/distrobuilder pack-incus images/${{matrix.release.distro}}.yml rootfs --vm -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}} -o source.variant=boot -o source.url=${{matrix.release.source}}
+
+      - name: Push
+        run: |
+          icepak push --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default
+        shell: alpine.sh {0}
+        env:
+          POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
+          POLAR_ENDPOINT: ${{ vars.POLAR_ENDPOINT }}
