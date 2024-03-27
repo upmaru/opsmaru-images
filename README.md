@@ -13,6 +13,10 @@ Configured to build the following releases for 2 architectures
 | ![ubuntu](https://github.com/upmaru/opsmaru-images/actions/workflows/ubuntu.yml/badge.svg) | `jammy` `noble` | `aarch64` `x86_64` | [View](https://images.opsmaru.com/?os=ubuntu) |
 | ![centos](https://github.com/upmaru/opsmaru-images/actions/workflows/centos.yml/badge.svg) | `8-Stream` `9-Stream` | `aarch64` `x86_64` | [View](https://images.opsmaru.com/?os=centos) |
 
+## How to Access
+
+Simply sign up here [images.opsmaru.com](https://images.opsmaru.com)
+
 ## Contribution
 
 If you need other images to be built, please open an issue or a pull request.
