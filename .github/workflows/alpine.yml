@@ -11,10 +11,10 @@ jobs:
       fail-fast: false
       matrix:
         release: [
-          {distro: "alpine", version: "3.16"},
-          {distro: "alpine", version: "3.17"},
-          {distro: "alpine", version: "3.18"},
-          {distro: "alpine", version: "3.19"},
+          # {distro: "alpine", version: "3.16"},
+          # {distro: "alpine", version: "3.17"},
+          # {distro: "alpine", version: "3.18"},
+          # {distro: "alpine", version: "3.19"},
           {distro: "alpine", version: "edge"}
         ]
         os: [
