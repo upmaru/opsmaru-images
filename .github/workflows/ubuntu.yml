@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup IcePAK
-        uses: upmaru/icepak@v0
+        uses: upmaru/icepak@v1
         with:
           alpine: v3.19
           arch: ${{matrix.os.arch}}
@@ -53,3 +53,57 @@ jobs:
         env:
           POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
           POLAR_ENDPOINT: ${{ vars.POLAR_ENDPOINT }}
+          TESTING_IMAGE_SERVER: ${{ secrets.TESTING_IMAGE_SERVER }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.release.distro}}-${{matrix.os.arch}}-${{matrix.release.version}}-${{github.run_number}}
+          path: |
+            ${{ github.workspace }}/incus.tar.xz
+            ${{ github.workspace }}/disk.qcow2
+            ${{ github.workspace }}/rootfs.squashfs
+          retention-days: 5
+
+  test:
+    needs: build
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        release: [
+          {distro: "ubuntu", version: "jammy", checks: "ipv4,ipv6"},
+          {distro: "ubuntu", version: "noble", checks: "ipv4,ipv6"}
+        ]
+        os: [
+          {arch: "aarch64", builder: "ubicloud-standard-2-arm"},
+          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
+        ]
+
+    runs-on: ${{matrix.os.builder}}
+    env:
+      ImageOS: ubuntu22
+    steps:
+      - uses: actions/download-artifact@v4
+        with: 
+          name: ${{matrix.release.distro}}-${{matrix.os.arch}}-${{matrix.release.version}}-${{github.run_number}}
+
+      - name: Setup IcePAK
+        uses: upmaru/icepak@v1
+        with:
+          alpine: v3.19
+          arch: ${{matrix.os.arch}}
+
+      - name: Generate Serial
+        id: generate-serial
+        run: |
+          echo "serial=$(date +'%Y%m%d')-$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Test
+        run: |
+          icepak validate --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default --checks ${{matrix.release.checks}}
+        shell: alpine.sh {0}
+        env:
+          POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
+          POLAR_ENDPOINT: ${{ vars.POLAR_ENDPOINT }}
+          TESTING_IMAGE_SERVER: ${{ secrets.TESTING_IMAGE_SERVER }}
