@@ -15,7 +15,7 @@ jobs:
           {distro: "alpine", version: "3.17"},
           {distro: "alpine", version: "3.18"},
           {distro: "alpine", version: "3.19"},
-          {distro: "alpine", version: "3.20"}
+          {distro: "alpine", version: "3.20"},
           {distro: "alpine", version: "edge"}
         ]
         os: [
