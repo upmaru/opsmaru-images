@@ -1,4 +1,4 @@
-name: 'Ubuntu'
+name: "Ubuntu"
 
 on:
   push:
@@ -10,19 +10,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [
-          {distro: "ubuntu", version: "jammy"},
-          {distro: "ubuntu", version: "noble"}
-        ]
-        os: [
-          {arch: "aarch64", builder: "ubicloud-standard-2-arm", source: "http://ports.ubuntu.com/ubuntu-ports"},
-          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x", source: "http://archive.ubuntu.com/ubuntu"}
-        ]
+        release:
+          [
+            { distro: "ubuntu", version: "jammy" },
+            { distro: "ubuntu", version: "noble" },
+          ]
+        os:
+          [
+            {
+              arch: "aarch64",
+              builder: "ubicloud-standard-2-arm",
+              source: "http://ports.ubuntu.com/ubuntu-ports",
+            },
+            {
+              arch: "x86_64",
+              builder: "warp-ubuntu-latest-x64-2x",
+              source: "http://archive.ubuntu.com/ubuntu",
+            },
+          ]
 
     runs-on: ${{matrix.os.builder}}
     env:
       ImageOS: ubuntu22
-    steps: 
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -71,21 +81,23 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        release: [
-          {distro: "ubuntu", version: "jammy", checks: "ipv4,ipv6"},
-          {distro: "ubuntu", version: "noble", checks: "ipv4,ipv6"}
-        ]
-        os: [
-          {arch: "aarch64", builder: "ubicloud-standard-2-arm"},
-          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
-        ]
+        release:
+          [
+            { distro: "ubuntu", version: "jammy", checks: "ipv4,ipv6" },
+            { distro: "ubuntu", version: "noble", checks: "ipv4,ipv6" },
+          ]
+        os:
+          [
+            { arch: "aarch64", builder: "ubicloud-standard-2-arm" },
+            { arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x" },
+          ]
 
     runs-on: ${{matrix.os.builder}}
     env:
       ImageOS: ubuntu22
     steps:
       - uses: actions/download-artifact@v4
-        with: 
+        with:
           name: ${{matrix.release.distro}}-${{matrix.os.arch}}-${{matrix.release.version}}-${{github.run_number}}
 
       - name: Setup IcePAK
