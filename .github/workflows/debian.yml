@@ -1,35 +1,37 @@
-name: 'Debian'
+name: "Debian"
 
 on:
   push:
     tags:
       - debian-*.*.*
-    
+
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
-        release: [
-          {distro: "debian", version: "bookworm"},
-          {distro: "debian", version: "trixie"}
-        ]
-        os: [
-          {arch: "aarch64", builder: "ubicloud-standard-2-arm"},
-          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
-        ]
+        release:
+          [
+            { distro: "debian", version: "bookworm" },
+            { distro: "debian", version: "trixie" },
+          ]
+        os:
+          [
+            { arch: "aarch64", builder: "ubicloud-standard-2-arm" },
+            { arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x" },
+          ]
 
     runs-on: ${{matrix.os.builder}}
     env:
       ImageOS: ubuntu22
-    steps: 
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup IcePAK
-        uses: upmaru/icepak@v0
+        uses: upmaru/icepak@v1
         with:
           alpine: v3.19
           arch: ${{matrix.os.arch}}
@@ -53,3 +55,49 @@ jobs:
         env:
           POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
           POLAR_ENDPOINT: ${{ vars.POLAR_ENDPOINT }}
+
+  test:
+    needs: build
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        release:
+          [
+            { distro: "debian", version: "bookworm", checks: "ipv4,ipv6" },
+            { distro: "debian", version: "trixie", checks: "ipv4,ipv6" },
+          ]
+        os:
+          [
+            { arch: "aarch64", builder: "ubicloud-standard-2-arm" },
+            { arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x" },
+          ]
+
+    runs-on: ${{matrix.os.builder}}
+    env:
+      ImageOS: ubuntu22
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup IcePAK
+        uses: upmaru/icepak@v1
+        with:
+          alpine: v3.19
+          arch: ${{matrix.os.arch}}
+
+      - name: Generate Serial
+        id: generate-serial
+        run: |
+          echo "serial=$(date +'%Y%m%d')-$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Test
+        run: |
+          icepak validate --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default --checks ${{matrix.release.checks}}
+        shell: alpine.sh {0}
+        env:
+          POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
+          POLAR_ENDPOINT: ${{ vars.POLAR_ENDPOINT }}
+          TESTING_IMAGE_SERVER: ${{ secrets.TESTING_IMAGE_SERVER }}
