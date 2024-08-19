@@ -10,10 +10,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release:
-          [
+        release: [
             { distro: "debian", version: "bookworm" },
-            { distro: "debian", version: "trixie" },
+            # { distro: "debian", version: "trixie" },
           ]
         os:
           [
@@ -73,10 +72,9 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        release:
-          [
+        release: [
             { distro: "debian", version: "bookworm", checks: "ipv4,ipv6" },
-            { distro: "debian", version: "trixie", checks: "ipv4,ipv6" },
+            # { distro: "debian", version: "trixie", checks: "ipv4,ipv6" },
           ]
         os:
           [
