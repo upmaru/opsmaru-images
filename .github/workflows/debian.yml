@@ -55,6 +55,17 @@ jobs:
         env:
           POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
           POLAR_ENDPOINT: ${{ vars.POLAR_ENDPOINT }}
+          TESTING_IMAGE_SERVER: ${{ secrets.TESTING_IMAGE_SERVER }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.release.distro}}-${{matrix.os.arch}}-${{matrix.release.version}}-${{github.run_number}}
+          path: |
+            ${{ github.workspace }}/incus.tar.xz
+            ${{ github.workspace }}/disk.qcow2
+            ${{ github.workspace }}/rootfs.squashfs
+          retention-days: 5
 
   test:
     needs: build
@@ -77,10 +88,9 @@ jobs:
     env:
       ImageOS: ubuntu22
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
+          name: ${{matrix.release.distro}}-${{matrix.os.arch}}-${{matrix.release.version}}-${{github.run_number}}
 
       - name: Setup IcePAK
         uses: upmaru/icepak@v1
@@ -95,7 +105,7 @@ jobs:
 
       - name: Test
         run: |
-          icepak validate --serial ${{ steps.generate-serial.outputs.serial }}  --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default --checks ${{matrix.release.checks}}
+          icepak validate --serial ${{ steps.generate-serial.outputs.serial }} --os ${{matrix.release.distro}} --arch ${{matrix.os.arch}} --release ${{matrix.release.version}} --variant default --checks ${{matrix.release.checks}}
         shell: alpine.sh {0}
         env:
           POLAR_AUTH_TOKEN: ${{ secrets.POLAR_AUTH_TOKEN }}
