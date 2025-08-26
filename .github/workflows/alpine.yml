@@ -1,4 +1,4 @@
-name: 'Alpine'
+name: "Alpine"
 
 on:
   push:
@@ -10,23 +10,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [
-          {distro: "alpine", version: "3.16"},
-          {distro: "alpine", version: "3.17"},
-          {distro: "alpine", version: "3.18"},
-          {distro: "alpine", version: "3.19"},
-          {distro: "alpine", version: "3.20"},
-          {distro: "alpine", version: "edge"}
-        ]
-        os: [
-          {arch: "aarch64", builder: "ubicloud-standard-2-arm"},
-          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
-        ]
+        release:
+          [
+            { distro: "alpine", version: "3.17" },
+            { distro: "alpine", version: "3.18" },
+            { distro: "alpine", version: "3.19" },
+            { distro: "alpine", version: "3.20" },
+            { distro: "alpine", version: "3.21" },
+            { distro: "alpine", version: "3.22" },
+            { distro: "alpine", version: "edge" },
+          ]
+        os:
+          [
+            { arch: "aarch64", builder: "ubicloud-standard-2-arm" },
+            { arch: "x86_64", builder: "ubicloud-standard-2" },
+          ]
 
     runs-on: ${{matrix.os.builder}}
     env:
       ImageOS: ubuntu22
-    steps: 
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -37,7 +40,7 @@ jobs:
         with:
           alpine: v3.19
           arch: ${{matrix.os.arch}}
-          
+
       - name: Generate Serial
         id: generate-serial
         run: |
@@ -45,7 +48,7 @@ jobs:
 
       - name: Build Image
         run: |
-          sudo apt-get install btrfs-progs dosfstools qemu-utils gdisk -y  
+          sudo apt-get install btrfs-progs dosfstools qemu-utils gdisk -y
           sudo ~/go/bin/distrobuilder build-dir images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
           sudo ~/go/bin/distrobuilder pack-incus images/${{matrix.release.distro}}.yml rootfs -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
           sudo ~/go/bin/distrobuilder pack-incus images/${{matrix.release.distro}}.yml rootfs --vm -o image.serial=${{ steps.generate-serial.outputs.serial }} -o image.architecture=${{matrix.os.arch}} -o image.release=${{matrix.release.version}}
@@ -68,32 +71,35 @@ jobs:
             ${{ github.workspace }}/disk.qcow2
             ${{ github.workspace }}/rootfs.squashfs
           retention-days: 5
-          
+
   test:
     needs: build
     strategy:
       max-parallel: 1
       fail-fast: false
       matrix:
-        release: [
-          {distro: "alpine", version: "3.16", checks: "ipv4,ipv6"},
-          {distro: "alpine", version: "3.17", checks: "ipv4,ipv6"},
-          {distro: "alpine", version: "3.18", checks: "ipv4,ipv6"},
-          {distro: "alpine", version: "3.19", checks: "ipv4,ipv6"},
-          {distro: "alpine", version: "3.20", checks: "ipv4,ipv6"},
-          {distro: "alpine", version: "edge", checks: "ipv4,ipv6"}
-        ]
-        os: [
-          {arch: "aarch64", builder: "ubicloud-standard-2-arm"},
-          {arch: "x86_64", builder: "warp-ubuntu-latest-x64-2x"}
-        ]
+        release:
+          [
+            { distro: "alpine", version: "3.17", checks: "ipv4,ipv6" },
+            { distro: "alpine", version: "3.18", checks: "ipv4,ipv6" },
+            { distro: "alpine", version: "3.19", checks: "ipv4,ipv6" },
+            { distro: "alpine", version: "3.20", checks: "ipv4,ipv6" },
+            { distro: "alpine", version: "3.21", checks: "ipv4,ipv6" },
+            { distro: "alpine", version: "3.22", checks: "ipv4,ipv6" },
+            { distro: "alpine", version: "edge", checks: "ipv4,ipv6" },
+          ]
+        os:
+          [
+            { arch: "aarch64", builder: "ubicloud-standard-2-arm" },
+            { arch: "x86_64", builder: "ubicloud-standard-2" },
+          ]
 
     runs-on: ${{matrix.os.builder}}
     env:
       ImageOS: ubuntu22
     steps:
       - uses: actions/download-artifact@v4
-        with: 
+        with:
           name: ${{matrix.release.distro}}-${{matrix.os.arch}}-${{matrix.release.version}}-${{github.run_number}}
 
       - name: Setup IcePAK
